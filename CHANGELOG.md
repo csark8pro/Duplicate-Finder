@@ -1,12 +1,12 @@
 # Changelog
 ##EXAMPLE
-#### VERSION[0.0.0]---DATE[DAY MONTH YEAR]
+### VERSION[0.0.0]---DATE[DAY MONTH YEAR]
 #### ADDED/REMOVED/CHANGED/FIXED
 * EXAMPLE LOG
 
 
 
-#### VERSION[0.0.1]---DATE[07 AUGUST 2018]
+### VERSION[0.0.1]---DATE[07 AUGUST 2018]
 #### ADDED
 * File CHANGELOG.md 
 * File requirements.txt
@@ -16,7 +16,7 @@
 
 
 
-#### VERSION[0.0.1]---DATE[08 AUGUST 2018]
+### VERSION[0.0.1]---DATE[08 AUGUST 2018]
 #### ADDED
 * todo.md
 * duplicate_checker.py show how many duplicates has been found
