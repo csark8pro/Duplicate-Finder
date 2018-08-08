@@ -9,7 +9,7 @@ class duplicate_checker(tk.Frame):
     """duplicate """
     # global variables here
     folder = ''
-    duplicates = 0
+    filestoremove = []
 
     def __init__(self):
         tk.Frame.__init__(self, master=None, height=600, width=800,)
@@ -19,31 +19,33 @@ class duplicate_checker(tk.Frame):
 
     def createWidgets(self):
         """create widgets"""
-        # label pic
-        # self.brand_label = tk.Label(self, image=ImageTk.PhotoImage(Image.open('brand.jpg')))
-        # self.brand_label.grid()
 
         # select folder button
-        self.folderButton = tk.Button(self, text="Select Directory", command=self.selectFolder)
+        self.folderButton = tk.Button(self, text='Select Directory', command=self.selectFolder)
         self.folderButton.grid(row=0, column=0)
 
         # remove duplicates button
-        self.removeDuplicates = tk.Button(self, text="Remove Duplicates", command=lambda:self.detect_duplicates(self.folder))
+        self.removeDuplicates = tk.Button(self, text='Remove Duplicates', command=lambda:self.detect_duplicates(self.folder))
         self.removeDuplicates.grid(row=1, column=0)
 
         # quit button
-        self.quitButton = tk.Button(self, text="Quit", command=self.quit)
+        self.quitButton = tk.Button(self, text='Quit', command=self.quit)
         self.quitButton.grid(row=3, column=0)
 
     def selectFolder(self):
         """Ask for a Directory"""
         self.folder = filedialog.askdirectory()
-        self.setFolderPath(self.folder)
+        self.showSelectedPath()
 
-    def setFolderPath(self,folderpath):
+    def showSelectedPath(self):
         """Show selected folder as a string """
-        self.selectedfolder = tk.Label(self, text=folderpath)
+        self.selectedfolder = tk.Label(self, text=self.folder)
         self.selectedfolder.grid(row=0, column=1)
+
+    def showAmountDelFiles(self):
+        # show amount of duplicates are found
+        self.showamount = tk.Label(self, text=str(len(self.filestoremove)) + ' Files removed.')
+        self.showamount.grid(row=1, column=1)
 
     def setDuplicatesFound(self,duplicatesfound):
         """Show how many duplicates are found"""
@@ -81,7 +83,7 @@ class duplicate_checker(tk.Frame):
 
         for file in file_list:
             # open file in binary mode
-            open_file = open(file, "br")
+            open_file = open(file, 'br')
             # add filepath + md5checksum to dictionary
             file_chksum_dict[file] = self.md5_for_file(open_file)
             # close file
@@ -92,25 +94,23 @@ class duplicate_checker(tk.Frame):
     def detect_duplicates(self, path_to_check):
         """compare file checksums in 1 folder"""
         # 1. create file_listing
-        print("1. create file_listing")
+        print('1. create file_listing')
         file_list = self.file_listing(path_to_check)
         # 2. create dict with md5 chksum
-        print("2. create dict with md5 chksum")
+        print('2. create dict with md5 chksum')
         file_md5_dict = self.file_and_chksum(file_list)
         # 3. check 4 duplicates
-        print("3. check 4 duplicates")
+        print('3. check 4 duplicates')
         for x in file_md5_dict:
             for i in file_md5_dict:
                 if file_md5_dict[x] == file_md5_dict[i] and i != x:
-                    # set a empty tag to remove the file
-                    file_md5_dict[i] = ''
-
-        for file in file_md5_dict:
-            if file_md5_dict[file]:
-                pass
-            else:
-                os.remove(file)
+                    file_md5_dict[x] = ''
+                    self.filestoremove.append(x)
+        for file in self.filestoremove:
+            os.remove(file)
+        self.showAmountDelFiles()
+        self.filestoremove = []
 
 main = duplicate_checker()
-main.master.title("Duplicate Checker by Raphael Aigner")
+main.master.title('Duplicate Checker by Raphael Aigner')
 main.mainloop()
