@@ -17,11 +17,11 @@
 
 
 #### VERSION[0.0.1]---DATE[08 AUGUST 2018]
-### ADDED
+#### ADDED
 * todo.md
 * duplicate_checker.py show how many duplicates has been found
 * README.md added a hint, not to use on system directories 
-### CHANGED
+#### CHANGED
 * duplicate_checker.py strings from "" to ''
 
 
