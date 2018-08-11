@@ -1,18 +1,19 @@
 import hashlib
 import os
 import tkinter as tk
-import pdb
 
-from tkinter import filedialog
+from tkinter import filedialog, StringVar
 
 class duplicate_checker(tk.Frame):
     """duplicate """
     # global variables here
     folder = ''
     filestoremove = []
+    defaultprefix = 'select prefix'
+    prefixes = ['select prefix', '.jpg', '.png', '.mp4', '.mp3', '.pdf']
 
     def __init__(self):
-        tk.Frame.__init__(self, master=None, height=600, width=800,)
+        tk.Frame.__init__(self, master=None, height=200, width=400)
         self.grid_propagate(0)
         self.grid()
         self.createWidgets()
@@ -26,7 +27,13 @@ class duplicate_checker(tk.Frame):
 
         # remove duplicates button
         self.removeDuplicates = tk.Button(self, text='Remove Duplicates', command=lambda:self.detect_duplicates(self.folder))
-        self.removeDuplicates.grid(row=1, column=0)
+        self.removeDuplicates.grid(row=2, column=0)
+
+        # file prefix filter
+        self.options = StringVar(master=self, value=self.prefixes)
+        self.options.set(self.defaultprefix)
+        self.prefixselection = tk.OptionMenu(self, self.options, *self.prefixes)
+        self.prefixselection.grid(row=1, column=0)
 
         # quit button
         self.quitButton = tk.Button(self, text='Quit', command=self.quit)
@@ -45,7 +52,7 @@ class duplicate_checker(tk.Frame):
     def showAmountDelFiles(self):
         # show amount of duplicates are found
         self.showamount = tk.Label(self, text=str(len(self.filestoremove)) + ' Files removed.')
-        self.showamount.grid(row=1, column=1)
+        self.showamount.grid(row=2, column=1)
 
     def setDuplicatesFound(self,duplicatesfound):
         """Show how many duplicates are found"""
@@ -56,24 +63,27 @@ class duplicate_checker(tk.Frame):
         """create a listing of all files in the given path"""
         # file listing
         file_list = []
-
         # walk through all folders and add files to the list
         for root, dirs, files in os.walk(path, topdown=False):
             for name in files:
-                file_list.append(os.path.join(root, name))
+                # file prefix filter default
+                if self.options.get() == self.defaultprefix:
+                    file_list.append(os.path.join(root, name))
+                else:
+                    if self.options.get() in os.path.join(root, name):
+                        file_list.append(os.path.join(root, name))
 
         return file_list
 
     def md5_for_file(self, f, block_size=2 ** 20):
         """create md5 checksum for a file"""
         md5 = hashlib.md5()
-
         while True:
             data = f.read(block_size)
             if not data:
                 break
-
             md5.update(data)
+
         return md5.digest()
 
     def file_and_chksum(self, file_list):

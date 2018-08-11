@@ -10,7 +10,7 @@
 #### ADDED
 * File CHANGELOG.md 
 * File requirements.txt
-* File CHANGELOG.MD entry
+* File CHANGELOG.md entry
 #### CHANGED
 * gui_checker.py renamed to duplicate_checker.py
 
@@ -25,6 +25,10 @@
 * duplicate_checker.py strings from "" to ''
 
 
+
+### VERSION[0.0.1]---DATE[11 AUGUST 2018]
+#### ADDED
+* duplicate_checker.py prefix filter selection
 
 
 
