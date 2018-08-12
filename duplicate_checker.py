@@ -1,6 +1,7 @@
 import hashlib
 import os
 import tkinter as tk
+import threading
 
 from tkinter import filedialog, StringVar, END
 
@@ -21,7 +22,6 @@ class duplicate_checker(tk.Frame):
 
     def createWidgets(self):
         """create widgets for the ui """
-
         # select folder button
         self.folderButton = tk.Button(
             self, text='Select Directory', command=self.selectFolder
@@ -80,6 +80,14 @@ class duplicate_checker(tk.Frame):
         self.selectedfolder = tk.Label(self, text=str(duplicatesfound))
         self.selectedfolder.grid()
 
+    def setprogress(self, message):
+        try:
+            self.progress.destroy()
+        except AttributeError:
+            pass
+        self.progress = tk.Label(self, text=message)
+        self.progress.grid(row=2, column=1)
+
     def fill_listing(self):
         """fill the list with duplicates"""
         self.listbox.delete(0, END)
@@ -115,6 +123,7 @@ class duplicate_checker(tk.Frame):
 
     def file_and_chksum(self, file_list):
         """create a dict with filename:checksum of the files in (1folder)"""
+
         file_chksum_dict = dict()
         for file in file_list:
             # open file in binary mode
@@ -129,9 +138,11 @@ class duplicate_checker(tk.Frame):
     def detect_duplicates(self, path_to_check):
         """compare file checksums in 1 folder"""
         # 1. create file_listing
+        # show progress
         print('1. create file_listing')
         file_list = self.file_listing(path_to_check)
         # 2. create dict with md5 chksum
+        pause.seconds(10)
         print('2. create dict with md5 chksum')
         file_md5_dict = self.file_and_chksum(file_list)
         # 3. check 4 duplicates
@@ -145,6 +156,7 @@ class duplicate_checker(tk.Frame):
 
     def remove_duplicates(self):
         """remove all files in the list"""
+        self.setprogress('Removing Duplicates')
         for file in self.filestoremove:
             os.remove(file)
         self.showAmountDelFiles()

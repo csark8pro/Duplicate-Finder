@@ -35,4 +35,4 @@
 ### VERSION[0.0.1]---DATE[12 AUGUST 2018]
 #### ADDED
 * duplicate_checker.py added FindDuplicates Button 
-* duplicate_checker.py added duplicate listing 
+* duplicate_checker.py added duplicate listing
