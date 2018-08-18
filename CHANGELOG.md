@@ -36,3 +36,20 @@
 #### ADDED
 * duplicate_checker.py added FindDuplicates Button 
 * duplicate_checker.py added duplicate listing
+
+
+
+### VERSION[0.0.1]---DATE[17 AUGUST 2018]
+#### ADDED
+* duplicate_checker.py added feature that shows how many duplicates are found
+
+
+
+
+### VERSION[0.0.1]---DATE[18 AUGUST 2018]
+#### ADDED
+* duplicate_checker.py added move to trash feature 
+* duplicate_checker.py added button to remove empty dirs
+
+
+

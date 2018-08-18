@@ -1,9 +1,9 @@
 import hashlib
 import os
 import tkinter as tk
-import threading
+from tkinter import END, Checkbutton, IntVar, Scrollbar, StringVar, filedialog
 
-from tkinter import filedialog, StringVar, END
+import send2trash
 
 
 class duplicate_checker(tk.Frame):
@@ -15,7 +15,7 @@ class duplicate_checker(tk.Frame):
     prefixes = ['select prefix', '.jpg', '.png', '.mp4', '.mp3', '.pdf']
 
     def __init__(self):
-        tk.Frame.__init__(self, master=None, height=400, width=400)
+        tk.Frame.__init__(self, master=None, height=300, width=800)
         self.grid_propagate(0)
         self.grid()
         self.createWidgets()
@@ -41,18 +41,35 @@ class duplicate_checker(tk.Frame):
             self, text='Find Duplicates',
             command=lambda: self.detect_duplicates(self.folder)
         )
-        self.findDuplicates.grid()
+        self.findDuplicates.grid(row=3, column=0)
 
         # Listing of duplicates
         self.listbox = tk.Listbox(self)
-        self.listbox.grid()
+        self.listbox.config(width=50)
+        self.listbox.grid(row=3, column=1)
 
         # remove duplicates button
         self.removeDuplicates = tk.Button(
             self, text='Remove Duplicates',
             command=lambda: self.remove_duplicates()
         )
-        self.removeDuplicates.grid()
+        self.removeDuplicates.grid(row=4, column=0)
+
+        # move files to trash checkbox
+        self.var = IntVar()
+        self.filestotrash = Checkbutton(
+            self, text='Move to Trash',
+            variable=self.var, onvalue=1,
+            offvalue=0,
+        )
+        self.filestotrash.grid(row=4, column=1)
+
+        # remove empty dirs button
+        self.delemptyfolders = tk.Button(
+            self, text='Remove empty directories',
+            command=lambda: self.detect_duplicates(self.folder)
+        )
+        self.delemptyfolders.grid(row=5, column=0)
 
         # quit button
         self.quitButton = tk.Button(self, text='Quit', command=self.quit)
@@ -68,12 +85,19 @@ class duplicate_checker(tk.Frame):
         self.selectedfolder = tk.Label(self, text=self.folder)
         self.selectedfolder.grid(row=0, column=1)
 
-    def showAmountDelFiles(self):
+    def showamountduplicates(self):
         # show amount of duplicates are found
+        self.amountduplicates = tk.Label(
+            self, text=str(len(self.filestoremove)) + ' Duplicates Found.'
+        )
+        self.amountduplicates.grid(row=2, column=1)
+
+    def showAmountDelFiles(self):
+        # show amount of are removed
         self.showamount = tk.Label(
             self, text=str(len(self.filestoremove)) + ' Files removed.'
         )
-        self.showamount.grid(row=4, column=1)
+        self.showamount.grid(row=4, column=2)
 
     def setDuplicatesFound(self, duplicatesfound):
         """Show how many duplicates are found"""
@@ -93,6 +117,10 @@ class duplicate_checker(tk.Frame):
         self.listbox.delete(0, END)
         for path in self.filestoremove:
             self.listbox.insert(END, path)
+
+    def rem_empty_dirs(self, path):
+        """remove empty dirs """
+        pass
 
     def file_listing(self, path):
         """create a listing of all files in the given path"""
@@ -137,12 +165,12 @@ class duplicate_checker(tk.Frame):
 
     def detect_duplicates(self, path_to_check):
         """compare file checksums in 1 folder"""
+        self.filestoremove = []
         # 1. create file_listing
         # show progress
         print('1. create file_listing')
         file_list = self.file_listing(path_to_check)
         # 2. create dict with md5 chksum
-        pause.seconds(10)
         print('2. create dict with md5 chksum')
         file_md5_dict = self.file_and_chksum(file_list)
         # 3. check 4 duplicates
@@ -152,13 +180,18 @@ class duplicate_checker(tk.Frame):
                 if file_md5_dict[x] == file_md5_dict[i] and i != x:
                     file_md5_dict[x] = ''
                     self.filestoremove.append(x)
+        self.showamountduplicates()
         self.fill_listing()
 
     def remove_duplicates(self):
         """remove all files in the list"""
         self.setprogress('Removing Duplicates')
-        for file in self.filestoremove:
-            os.remove(file)
+        if self.var.get():
+            for file in self.filestoremove:
+                send2trash.send2trash(file)
+        else:
+            for file in self.filestoremove:
+                os.remove(file)
         self.showAmountDelFiles()
         self.filestoremove = []
 
